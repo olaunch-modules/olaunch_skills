@@ -187,7 +187,7 @@ Preview the steps (the eye beside the scenario) also shows a line generated from
 
 A tester reads the `name`, the `description` and the step list and nothing else. Write all three for someone who knows the business and not the database.
 
-**Scenario `name`** — the journey, as a person would describe it, under about 70 characters. Leave the app out: the scenario's `category` already groups it under that app in the panel's list.
+**Scenario `name`** — the journey, as a person would describe it, under about 70 characters. Leave the app out: the scenario's `category` and `subcategory` already place it under that app in the panel's list.
 - Good: "Unbuild a serial-tracked manufactured unit"
 - Good: "Override a customer's credit limit"
 - Bad: "Accounting: Invoice a customer" — repeats the ACCOUNTING header it sits under.
@@ -327,46 +327,79 @@ still check them when their defaults already pass (a quantity of 1 satisfies `> 
 
 The tester's list is grouped: each `category` is a collapsed section header carrying a
 completed/total count, so a tester can open the app area they were asked to test and see
-how much of it is left.
+how much of it is left. The `subcategory` names the app within that area and shows as a
+chip on the scenario.
+
+Both follow Odoo's own Apps menu, so a tester sees the same words in the panel as in
+Odoo. Write them as Odoo names them, as text: `"Point of Sale"`, not `point_of_sale`.
+
+`category` [optional] — the Odoo **top-level app category** the journey belongs to: the
+headings in the Apps menu sidebar. Text, up to 128 characters, no `/` (one level only).
+The panel groups case-insensitively and shows it uppercased.
+
+`subcategory` [optional] — the **Odoo app** the journey lives in, by its name in the Apps
+menu. Same format. Leave it out when no single app fits rather than inventing one: the
+scenario then shows no app chip.
+
+- Good: `"category": "Sales", "subcategory": "Point of Sale"`
+- Good: `"category": "Human Resources", "subcategory": "Time Off"`
+- Good: `"category": "Sales"` with no subcategory, for a journey spanning Sales and CRM.
+- Bad: `"category": "Sales/Point of Sale"` — the two levels are two keys; `/` is refused.
+- Bad: `"category": "olaunch_testflight_account"` — that is the module.
+- Bad: `"category": "Quote to cash"` — that is the journey, which is what `name` is for.
+
+**Pick from the recommended list.** These are Odoo 19/20's categories and the apps under
+them. Use these names on every Odoo version, so a scenario keeps its place when it is
+ported: on 17 and 18, Odoo's Inventory, Manufacturing, Purchase, Quality, Maintenance,
+PLM and Repairs sit under **Supply Chain**, and the delivery carriers under
+**Shipping Connectors**.
+
+| `category` | `subcategory` |
+|---|---|
+| Accounting | Accounting, Invoicing, Equity |
+| Sales | Sales, CRM, Contacts, Point of Sale, Restaurant, Rental, Subscriptions, Sign |
+| Website | Website, eCommerce, eLearning, Live Chat, Online Jobs |
+| Supply Chain | Inventory, Barcode, Repairs, Purchase, Manufacturing, Quality, Maintenance, Product Lifecycle Management (PLM) |
+| Shipping Connectors | the carrier's app, e.g. DHL Express Shipping, Sendcloud Shipping |
+| Human Resources | Employees, Skills Management, Time Off, Attendances, Expenses, Payroll, Planning, Recruitment, Employee Referral, Appraisals, Approvals, Fleet, Frontdesk, Lunch |
+| Marketing | Email Marketing, SMS Marketing, Marketing Automation, Events, Surveys, Social Marketing, Marketing Card |
+| Services | Project, Timesheets, Field Service, Helpdesk, Appointments, Databases |
+| Productivity | Discuss, Calendar, Documents, Knowledge, To-Do, Phone, Meeting Rooms, WhatsApp Messaging, Data Recycle |
+| Customizations | Studio |
+| Administration | Internet of Things |
+| ESG | ESG |
+
+**A category of your own is allowed when nothing on the list fits** — for example a custom
+module that stands entirely on its own and touches no standard app area. Name it as the
+business would, in the same style ("Fleet Compliance"), and expect the reviewer to ask
+why. Do not invent a category for a journey that belongs to a standard app, and do not
+respell a listed one: grouping ignores case, but "Supply chain management" and
+"Supply Chain" are still two sections.
 
 **Group only where it helps.** A category earns its place when it gathers several
-scenarios a tester would work through together. A section holding a single scenario is
-just an extra click to open it, so don't give a scenario a category of its own: use one
-its neighbours already share, or leave `category` out when none fits. Uncategorised
-scenarios fall into *Miscellaneous* at the bottom of the list, so when most of a set
-would end up there, that is a sign to pick a broader shared category instead.
+scenarios a tester would work through together, so a custom category is for a module
+that will carry several scenarios; a lone scenario belongs under the nearest listed
+category. Uncategorised scenarios fall into *Miscellaneous* at the bottom of the list.
 
-`category` [optional] — one slug, `^[a-z0-9][a-z0-9_]*$` (lowercase, digits and
-underscores; no spaces, hyphens or capitals). It names the **Odoo app area the journey
-belongs to**, as the business would say it — not the module and not the journey itself.
-The panel shows it uppercased with underscores as spaces, so `point_of_sale` reads as POINT OF SALE.
-- Good: `accounting`, `inventory`, `field_service`
-- Bad: `olaunch_testflight_account` — that is the module; the module name is already
-  dropped from the scenario's meta line once it has a category.
-- Bad: `quote_to_cash` — that is the journey, which is what `name` is for.
-
-**Reuse the existing vocabulary — never invent a spelling.** Grouping is by exact string,
-so `sale` and `sales` are two separate sections and neither shows the full count. Before
-choosing one, look at what the neighbouring scenarios already use:
+Before choosing, check what the neighbouring scenarios already use, and match them:
 
 ```bash
-grep -rho '"category": *"[a-z0-9_]*"' --include='*.json' . | sort -u
+grep -rhoE '"(sub)?category": *"[^"]*"' --include='*.json' . | sort | uniq -c
 ```
 
-In use today: `accounting`, `crm`, `discuss`, `documents`, `email_marketing`, `events`,
-`expenses`, `field_service`, `frontdesk`, `helpdesk`, `internal`, `inventory`,
-`manufacturing`, `payroll`, `planning`, `point_of_sale`, `portal`, `project`, `purchase`,
-`recruitment`, `rental`, `sale`, `sign`, `social`, `subscriptions`, `surveys`,
-`time_off`, `timesheets`.
+Older scenarios carry lowercase slugs (`point_of_sale`, `time_off`). They still load and
+share a section with the Odoo name, but when you edit one, move it to the listed names:
+`time_off` becomes `"category": "Human Resources", "subcategory": "Time Off"`.
 
-`tags` [optional] — up to 16 slugs, same pattern. Where a category says *which app area*,
+`tags` [optional] — up to 16 slugs (`^[a-z0-9][a-z0-9_]*$`: lowercase, digits and
+underscores). Where the category and subcategory say *which app area*,
 tags say *what kind of testing this is*, cutting across app areas: a UAT manager filters
 on them to pull a set together. A scenario sits in exactly one category but may carry
 several tags. They show as blue chips before the audience chips.
 - Good: `onboarding` (the go-live pass), `month_end`, `portal`
-- Bad: a tag that repeats the category or the module — it buys nothing and clutters the row.
+- Bad: a tag that repeats the category, subcategory or module — it buys nothing and clutters the row.
 
-The search box matches on category and tag as well as name, module and group names, so a
+The search box matches on category, subcategory and tag as well as name, module and group names, so a
 tester typing "onboarding" or "inventory" finds the same handful of scenarios either way.
 Searching also expands every matching group, so a collapsed section never hides a hit.
 
@@ -810,7 +843,8 @@ Online Schema Validation
     "uid": "my_scenario",
     "name": "My Scenario",
     "description": "One line on what the tester is doing.",
-    "category": "sale",
+    "category": "Sales",
+    "subcategory": "Sales",
     "tags": ["onboarding"],
     "allowed_groups": ["sales_team.group_sale_manager"],
     "required_modules": ["sale_management"],

@@ -1,6 +1,6 @@
 ---
 name: olaunch-conversions
-description: Follow a support partner's OLaunch conversion projects through the OLaunch Conversions REST API: their runs and each run's tasks, the verification reports and the deploy key. Update a running conversion's client modules from its Git repositories, from a terminal or a CI job. Use when asked to check a conversion's progress or reports, or to get or create a project's deploy key. Use it to pull a client's new custom addon commits into a conversion and upgrade them. Use it to set up a GitLab webhook or GitHub Actions workflow that runs that update on every push.
+description: "Follow a support partner's OLaunch conversion projects through the OLaunch Conversions REST API: their runs and each run's tasks, the verification reports and the deploy key. Update a running conversion's client modules from its Git repositories, from a terminal or a CI job. Use when asked to check a conversion's progress or reports, or to get or create a project's deploy key. Use it to pull a client's new custom addon commits into a conversion and upgrade them. Use it to set up a GitLab webhook or GitHub Actions workflow that runs that update on every push."
 ---
 
 # OLaunch Conversions API

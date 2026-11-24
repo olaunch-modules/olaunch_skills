@@ -1,14 +1,13 @@
 # OLaunch skills
 
-Agent skills for the OLaunch REST APIs. They teach an AI agent (Claude Code,
-Codex, Cursor and any other agent that reads skills) how to work with OLaunch
-for you.
+Agent skills for the OLaunch MCP server (`https://mcp.olaunch.io/mcp`). They teach MCP clients how to work with OLaunch for you.
 
 | Skill | What it does |
 |---|---|
-| [`olaunch-testflight`](skills/olaunch-testflight/SKILL.md) | Create TestFlight projects, write and load scenarios, assign testers, relaunch with feedback and read the results. |
-| [`olaunch-healthchecks`](skills/olaunch-healthchecks/SKILL.md) | Connect client databases, run and read healthcheck reports, anonymise fields, and build, test and publish custom healthchecks. |
-| [`olaunch-conversions`](skills/olaunch-conversions/SKILL.md) | Follow conversion projects, their runs, tasks and verification reports, get the deploy key, and update a running conversion's client modules from Git (by hand, from CI or on every push). |
+| [`olaunch-healthchecks`](skills/olaunch-healthchecks/SKILL.md) | Connect client databases, run healthcheck reports, anonymise fields, and publish custom checks. |
+| [`olaunch-testflight`](skills/olaunch-testflight/SKILL.md) | Manage TestFlight projects, author scenarios, assign testers, and review runs. |
+| [`olaunch-conversions`](skills/olaunch-conversions/SKILL.md) | Follow conversion projects and verification reports, manage deploy keys, and update client modules. |
+| [`olaunch-mcp-gateway`](skills/olaunch-mcp-gateway/SKILL.md) | Inspect and update records inside approved client Odoo databases. |
 
 ## Install
 
@@ -16,18 +15,14 @@ for you.
 npx skills add olaunch-modules/olaunch_skills --global
 ```
 
-This installs every skill for every agent on your machine. To pick up new
-versions:
+This installs every skill for every agent on your machine. Update later with:
 
 ```bash
 npx skills update
 ```
 
-To install one skill only, add `--skill olaunch-testflight`,
-`--skill olaunch-healthchecks` or `--skill olaunch-conversions`.
+To install one skill only, pass `--skill` with `olaunch-healthchecks`, `olaunch-testflight`, `olaunch-conversions`, or `olaunch-mcp-gateway`.
 
-## API key
+## Connect
 
-Every skill calls the OLaunch API with your personal API key. Create one in the
-OLaunch portal under **Settings → API Access** and give it to your agent when
-it asks.
+Connect `https://mcp.olaunch.io/mcp` in your MCP client and sign in with OAuth or an OLaunch API key. Apps without MCP can use the REST API at `https://www.olaunch.com/api/docs`.

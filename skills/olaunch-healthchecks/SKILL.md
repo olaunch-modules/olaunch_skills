@@ -53,4 +53,4 @@ Build and publish a custom check:
 
 ## REST fallback
 
-Apps without MCP can use the REST API: `https://www.olaunch.com/api/docs`.
+Apps without MCP can use the REST API on `https://api.olaunch.io/api/v1/healthchecks`, with your OLaunch API key as the bearer token. Its docs and `openapi.json` are on `https://api.olaunch.io/api/v1/healthchecks/docs`. The old `olaunch.com/api/v1/healthchecks` paths answer 410 with the new address.
